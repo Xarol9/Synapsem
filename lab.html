@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>SYNAPSE // LAB</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="cursor-blur"></div>
+    <nav>
+        <a href="index.html" class="logo">SYNAPSE<span>_</span></a>
+        <div class="nav-links">
+            <a href="index.html">HOME</a>
+            <a href="shop.html">STORE</a>
+            <a href="lab.html" class="active">LAB</a>
+            <a href="archive.html">ARCHIVE</a>
+            <a href="about.html">INTEL</a>
+        </div>
+    </nav>
+
+    <section class="section">
+        <h2 style="font-family: 'Orbitron'; color: var(--neon);">RESEARCH DATA</h2>
+        <div class="grid" style="margin-top: 40px;">
+            <div class="card">
+                <h3>01 // ТЕПЛОВІДДАЧА</h3>
+                <p>Порівняльний графік матеріалів.</p>
+                
+                <div style="margin-top:20px; height: 10px; background: #222; width: 100%;">
+                    <div style="height: 100%; width: 85%; background: var(--neon);"></div>
+                </div>
+                <span style="font-size: 10px; color: var(--neon);">EFFICIENCY: 85%</span>
+            </div>
+            
+            <div class="card">
+                <h3>02 // ВОЛОГОСТІЙКІСТЬ</h3>
+                <p>Результати тесту IP-67.</p>
+                 <div style="margin-top:20px; height: 10px; background: #222; width: 100%;">
+                    <div style="height: 100%; width: 98%; background: var(--neon);"></div>
+                </div>
+                <span style="font-size: 10px; color: var(--neon);">PROTECTION: 98%</span>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const blur = document.getElementById('cursor-blur');
+        document.addEventListener('mousemove', e => {
+            blur.style.left = e.clientX + 'px'; blur.style.top = e.clientY + 'px';
+        });
+    </script>
+</body>
+</html>

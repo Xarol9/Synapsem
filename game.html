@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SYNAPSE // STABLE_CORE</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 80vh;
+        }
+        canvas {
+            background: #000;
+            border: 2px solid var(--neon);
+            box-shadow: 0 0 20px var(--neon-rgba);
+            touch-action: none; /* Фікс для мобілок */
+        }
+        .ui-info {
+            font-family: 'Orbitron';
+            color: var(--neon);
+            margin: 10px 0;
+            font-size: 1.2rem;
+        }
+        .controls-hint {
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="vortex-bg"></div>
+    <nav><a href="index.html" class="logo">SYNAPSE<span>.OS</span></a></nav>
+
+    <div class="tab-container">
+        <button class="tab-btn active" id="t-btn" onclick="showGame('tetris')">01_TETRIS</button>
+        <button class="tab-btn" id="r-btn" onclick="showGame('runner')">02_RUNNER</button>
+    </div>
+
+    <div class="game-container">
+        <div id="tetris-section" class="game-view active">
+            <div class="ui-info">SCORE: <span id="t-score">0</span></div>
+            <canvas id="tetris-cvs" width="240" height="400"></canvas>
+            <div class="controls-hint">PC: Arrows | MOBILE: Tap Sides</div>
+        </div>
+
+        <div id="runner-section" class="game-view">
+            <div class="ui-info">DISTANCE: <span id="r-score">0</span></div>
+            <canvas id="runner-cvs" width="320" height="400"></canvas>
+            <div class="controls-hint">PC: Mouse | MOBILE: Swipe/Drag</div>
+        </div>
+    </div>
+
+    <script>
+        // --- СИСТЕМА ВКЛАДОК ---
+        function showGame(game) {
+            document.querySelectorAll('.game-view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            if(game === 'tetris') {
+                document.getElementById('tetris-section').classList.add('active');
+                document.getElementById('t-btn').classList.add('active');
+            } else {
+                document.getElementById('runner-section').classList.add('active');
+                document.getElementById('r-btn').classList.add('active');
+            }
+        }
+
+        // --- ЛОГІКА ТЕТРИСУ ---
+        const tCvs = document.getElementById('tetris-cvs');
+        const tCtx = tCvs.getContext('2d');
+        tCtx.scale(20, 20);
+
+        const arena = Array.from({length: 20}, () => Array(12).fill(0));
+        const pieces = 'ILJOTSZ';
+        let player = { pos: {x: 4, y: 0}, matrix: createPiece('T'), score: 0 };
+
+        function createPiece(type) {
+            if (type === 'I') return [[0,1,0,0],[0,1,0,0],[0,1,0,0],[0,1,0,0]];
+            if (type === 'L') return [[0,2,0],[0,2,0],[0,2,2]];
+            if (type === 'T') return [[0,3,0],[3,3,3],[0,0,0]];
+            return [[4,4],[4,4]]; // Square
+        }
+
+        function draw() {
+            tCtx.fillStyle = '#000';
+            tCtx.fillRect(0,0,12,20);
+            drawMatrix(arena, {x:0, y:0});
+            drawMatrix(player.matrix, player.pos);
+        }
+
+        function drawMatrix(matrix, offset) {
+            matrix.forEach((row, y) => {
+                row.forEach((val, x) => {
+                    if (val !== 0) {
+                        tCtx.fillStyle = '#00f2ff';
+                        tCtx.fillRect(x + offset.x, y + offset.y, 1, 1);
+                    }
+                });
+            });
+        }
+
+        function playerDrop() {
+            player.pos.y++;
+            if (collide()) {
+                player.pos.y--;
+                merge();
+                playerReset();
+                clearLines();
+            }
+        }
+
+        function collide() {
+            const [m, o] = [player.matrix, player.pos];
+            for (let y = 0; y < m.length; ++y) {
+                for (let x = 0; x < m[y].length; ++x) {
+                    if (m[y][x] !== 0 && (arena[y + o.y] && arena[y + o.y][x + o.x]) !== 0) return true;
+                }
+            }
+            return false;
+        }
+
+        function merge() {
+            player.matrix.forEach((row, y) => {
+                row.forEach((val, x) => {
+                    if (val !== 0) arena[y + player.pos.y][x + player.pos.x] = val;
+                });
+            });
+        }
+
+        function playerReset() {
+            player.matrix = createPiece(pieces[Math.floor(Math.random()*pieces.length)]);
+            player.pos.y = 0;
+            player.pos.x = 4;
+            if (collide()) arena.forEach(r => r.fill(0)); // Game Over
+        }
+
+        function clearLines() {
+            outer: for(let y=19; y>0; y--) {
+                for(let x=0; x<12; x++) if(arena[y][x] === 0) continue outer;
+                arena.splice(y, 1);
+                arena.unshift(new Array(12).fill(0));
+                player.score += 100;
+                document.getElementById('t-score').innerText = player.score;
+            }
+        }
+
+        // --- ЛОГІКА РАННЕРА ---
+        const rCvs = document.getElementById('runner-cvs');
+        const rCtx = rCvs.getContext('2d');
+        let rPos = 160, rScore = 0, obs = [];
+
+        function updateRunner() {
+            rCtx.fillStyle = '#000';
+            rCtx.fillRect(0,0,320,400);
+            
+            // Гравець
+            rCtx.fillStyle = '#00f2ff';
+            rCtx.fillRect(rPos - 15, 350, 30, 10);
+
+            // Перешкоди
+            if(Math.random() < 0.05) obs.push({x: Math.random()*290, y: -30});
+            obs.forEach((o, i) => {
+                o.y += 5;
+                rCtx.fillStyle = '#ff003c';
+                rCtx.fillRect(o.x, o.y, 30, 30);
+                if(o.y > 340 && o.y < 370 && Math.abs(o.x - (rPos-15)) < 30) {
+                    obs = []; rScore = 0; // Collision
+                }
+                if(o.y > 400) { obs.splice(i,1); rScore += 10; }
+            });
+            document.getElementById('r-score').innerText = rScore;
+        }
+
+        // Керування
+        window.addEventListener('keydown', e => {
+            if(e.key === 'ArrowLeft') player.pos.x--;
+            if(e.key === 'ArrowRight') player.pos.x++;
+            if(e.key === 'ArrowDown') playerDrop();
+        });
+
+        rCvs.addEventListener('mousemove', e => {
+            const rect = rCvs.getBoundingClientRect();
+            rPos = (e.clientX - rect.left) * (320 / rect.width);
+        });
+
+        // Loop
+        let last = 0;
+        function loop(t = 0) {
+            const dt = t - last;
+            if(dt > 1000) { playerDrop(); last = t; }
+            
+            draw();
+            updateRunner();
+            requestAnimationFrame(loop);
+        }
+        loop();
+    </script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+/* --- ОСНОВНІ ЗМІННІ ТА НАЛАШТУВАННЯ --- */
+:root {
+    --accent: #00f2ff;
+    --accent-glow: rgba(0, 242, 255, 0.5);
+    --bg-dark: #05070a;
+    --text: #ffffff;
+    --text-dim: #a0a0a0;
+    --card-bg: rgba(255, 255, 255, 0.03);
+    --border: rgba(255, 255, 255, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* --- ФОНОВИЙ КАНВАС (НЕЙРОНИ) --- */
+#neuron-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+/* --- КОНТЕЙНЕР --- */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* --- НАВІГАЦІЯ --- */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid var(--border);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-decoration: none;
+    color: white;
+}
+
+.logo span {
+    color: var(--accent);
+}
+
+/* --- СКЛЯНІ КАРТКИ (GLASSMORPHISM) --- */
+.glass-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(15px);
+    border-radius: 15px;
+    padding: 25px;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* --- КНОПКИ --- */
+.buy-btn {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 12px 25px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.buy-btn:hover {
+    background: var(--accent);
+    color: black;
+    box-shadow: 0 0 20px var(--accent-glow);
+}
+
+/* --- ВИСУВНЕ МЕНЮ --- */
+.side-nav {
+    position: fixed;
+    top: 0;
+    right: -300px;
+    width: 300px;
+    height: 100%;
+    background: rgba(5, 7, 10, 0.95);
+    backdrop-filter: blur(20px);
+    z-index: 2000;
+    padding: 40px;
+    transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+    border-left: 1px solid var(--border);
+}
+
+.side-nav.active {
+    right: 0;
+}
+
+.side-links {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.side-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: 0.3s;
+}
+
+.side-links a:hover {
+    color: var(--accent);
+    padding-left: 10px;
+}
+
+/* --- СПИСКИ --- */
+.feature-list {
+    list-style: none;
+}
+
+.feature-list li {
+    margin-bottom: 10px;
+    position: relative;
+    padding-left: 20px;
+}
+
+.feature-list li::before {
+    content: "●";
+    color: var(--accent);
+    position: absolute;
+    left: 0;
+    font-size: 0.8rem;
+}
+
+/* --- АНІМАЦІЇ ПОЯВИ --- */
+[data-aos="fade-up"] {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease-out;
+}
+
+.visible {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}

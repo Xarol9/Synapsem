@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>SYNAPSE // DECLASSIFIED ARCHIVE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon: #00f2ff;
+            --alert: #ff3333;
+            --bg: #050505;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+            /* Ефект старих ліній телевізора на весь екран */
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 4px, 3px 100%;
+        }
+
+        .section { padding: 60px 10%; }
+
+        /* Сітка карток */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+        }
+
+        /* КАРТКА З ГЛІТЧЕМ */
+        .archive-card {
+            background: rgba(15, 15, 20, 0.9);
+            border: 1px solid #222;
+            padding: 30px;
+            position: relative;
+            transition: 0.4s;
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 93% 100%, 0 100%);
+        }
+
+        .archive-card:hover {
+            border-color: var(--alert);
+            box-shadow: 0 0 20px rgba(255, 51, 51, 0.2);
+            transform: scale(1.02);
+        }
+
+        /* ЕФЕКТ ШУМУ (STATIC) */
+        .static-noise {
+            width: 100%;
+            height: 180px;
+            background: #000;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 2px solid #222;
+            margin-bottom: 20px;
+        }
+
+        .static-noise::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://media.giphy.com/media/oEI9uWUicS3Ze/giphy.gif'); /* Гіфка шуму для 100% роботи */
+            background-size: cover;
+            opacity: 0.1;
+        }
+
+        .no-signal-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Orbitron';
+            color: var(--alert);
+            border: 1px solid var(--alert);
+            padding: 5px 15px;
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            background: rgba(0,0,0,0.9);
+        }
+
+        /* REDACTED ТЕКСТ */
+        .redacted {
+            background: #111;
+            color: #111;
+            padding: 0 5px;
+            transition: 0.3s;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .redacted:hover {
+            background: var(--alert);
+            color: black;
+        }
+
+        .status-badge {
+            font-family: 'Orbitron';
+            color: var(--alert);
+            font-size: 0.6rem;
+            border: 1px solid var(--alert);
+            padding: 2px 8px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        h3 { font-family: 'Orbitron'; letter-spacing: 2px; }
+
+        /* Декоративні скануючі лінії */
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 51, 51, 0.2);
+            position: absolute;
+            top: 0;
+            animation: moveScan 4s linear infinite;
+        }
+
+        @keyframes moveScan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <section class="section">
+        <h1 style="font-family: 'Orbitron'; color: white; text-align: center; letter-spacing: 15px; margin-bottom: 50px;">
+            ARCHIVE<span style="color: var(--alert);">_DECLASSIFIED</span>
+        </h1>
+
+        <div class="grid">
+            
+            <div class="archive-card">
+                <div class="scanline"></div>
+                <div class="static-noise">
+                    <div class="no-signal-text">DATA_LOST</div>
+                </div>
+                
+                <div class="status-badge">TERMINATED</div>
+                <h3>PROJECT: ALPHA</h3>
+                <p style="color: #888; line-height: 1.6;">
+                    Експериментальний зразок 2024. Перегрів ядра призвів до 
+                    <span class="redacted">вибуху реактора</span>. 
+                    Об'єкт <span class="redacted">повністю знищено</span>.
+                </p>
+                <div style="margin-top: 20px; color: #444; font-size: 0.7rem; font-family: 'Orbitron'; display: flex; justify-content: space-between;">
+                    <span>ID: #ERR-404</span>
+                    <span style="color: var(--alert);">CORRUPTED</span>
+                </div>
+            </div>
+
+            <div class="archive-card">
+                <div class="scanline" style="animation-delay: 2s;"></div>
+                <div class="static-noise">
+                    <div class="no-signal-text" style="color: var(--neon); border-color: var(--neon);">ENCRYPTED</div>
+                </div>
+
+                <div class="status-badge" style="color: var(--neon); border-color: var(--neon);">CLASSIFIED</div>
+                <h3>PROJECT: PHANTOM</h3>
+                <p style="color: #888; line-height: 1.6;">
+                    Технологія стелс-костюма. Проект переведено в 
+                    <span class="redacted">Сектор 7</span> під нагляд 
+                    <span class="redacted">Ради Десяти</span>.
+                </p>
+                <div style="margin-top: 20px; color: #444; font-size: 0.7rem; font-family: 'Orbitron'; display: flex; justify-content: space-between;">
+                    <span>ID: #GHOST-01</span>
+                    <span style="color: var(--neon);">SECURED</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</body>
+</html>

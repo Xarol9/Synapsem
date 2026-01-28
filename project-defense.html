@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYNAPSE // FINAL DEFENSE PROTOCOL</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --accent: #00f2ff;
+            --accent-dim: rgba(0, 242, 255, 0.15);
+            --bg-dark: #05070a;
+            --panel-bg: rgba(10, 15, 25, 0.95);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Виправлення: Запобігання смиканню фону */
+        body { margin: 0; overflow-x: hidden; background: var(--bg-dark); color: white; }
+        
+        .presentation-grid {
+            display: grid;
+            grid-template-columns: 1fr 450px;
+            gap: 25px;
+            min-height: 550px;
+            margin: 40px 0;
+        }
+
+        .cyber-slider {
+            position: relative;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .slide-img {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover; opacity: 0; transform: scale(1.1);
+            transition: opacity 1s ease-in-out, transform 1.2s ease-out;
+            z-index: 1;
+        }
+
+        .slide-img.active { opacity: 0.5; transform: scale(1); z-index: 2; }
+
+        .slide-info-panel {
+            background: var(--panel-bg);
+            padding: 40px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .progress-line {
+            position: absolute; bottom: 0; left: 0; height: 4px;
+            background: var(--accent); width: 0%; z-index: 10;
+        }
+
+        .console-box {
+            background: #000; padding: 15px;
+            font-family: 'Consolas', 'Courier New', monospace; font-size: 13px;
+            color: var(--accent); height: 250px; overflow-y: hidden;
+            border: 1px solid var(--border); line-height: 1.5;
+        }
+
+        .bar-outer { background: rgba(255,255,255,0.05); height: 6px; border-radius: 3px; margin-top: 8px; overflow: hidden; }
+        .bar-inner { height: 100%; background: var(--accent); width: 0; transition: width 2s cubic-bezier(0.1, 0, 0, 1); box-shadow: 0 0 10px var(--accent); }
+
+        .btn-nav {
+            background: var(--accent-dim); border: 1px solid var(--accent);
+            color: white; padding: 10px 25px; cursor: pointer;
+            transition: 0.3s; font-weight: bold; text-transform: uppercase;
+        }
+        .btn-nav:hover { background: var(--accent); color: #000; }
+
+        @media (max-width: 950px) {
+            .presentation-grid { grid-template-columns: 1fr; }
+            .cyber-slider { height: 400px; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="neuron-canvas"></canvas>
+
+    <nav>
+        <a href="index.html" class="logo">SYNAPSE<span>.SYSTEMS</span></a>
+        <div id="clock" style="font-family: monospace; color: var(--accent); letter-spacing: 2px;">00:00:00</div>
+    </nav>
+
+    <main class="container" style="padding: 0 5% 80px;">
+        
+        <header style="text-align: center; padding: 60px 0;">
+            <h1 style="font-size: clamp(2.5rem, 8vw, 6rem); font-weight: 900; margin: 0; line-height: 1;">PROJECT DEFENSE</h1>
+            <p style="color: var(--text-dim); letter-spacing: 5px; font-size: 0.75rem; margin-top: 15px;">AUTONOMOUS PRESENTATION UNIT // VER 4.0</p>
+        </header>
+
+        <div class="presentation-grid">
+            <div class="cyber-slider" id="slider-main">
+                <img src="slide1.jpg" class="slide-img active" onerror="this.src='https://images.unsplash.com/photo-1635776062127-d379bfcba9f8?w=1200'">
+                <img src="slide2.jpg" class="slide-img" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200'">
+                <img src="slide3.jpg" class="slide-img" onerror="this.src='https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=1200'">
+                
+                <div style="position: absolute; bottom: 40px; left: 40px; z-index: 5;">
+                    <h2 id="slide-title" style="font-size: 3rem; margin: 0; text-transform: uppercase;">ФІЛОСОФІЯ</h2>
+                    <p id="slide-text" style="color: var(--accent); font-size: 1.2rem; margin: 10px 0 0;">Digital екосистема майбутнього.</p>
+                </div>
+            </div>
+
+            <div class="slide-info-panel">
+                <div id="slide-details">
+                    <h4 style="color: var(--accent); margin-bottom: 20px; font-size: 0.8rem; letter-spacing: 2px;">[ DATA_STREAM ]</h4>
+                    <p id="slide-full-desc" style="color: var(--text-dim); line-height: 1.8; font-size: 0.95rem;">
+                        Завантаження опису системи...
+                    </p>
+                </div>
+                
+                <div>
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <button class="btn-nav" onclick="manualChange(-1)">PREV</button>
+                        <button class="btn-nav" onclick="manualChange(1)">NEXT</button>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-family: monospace; font-size: 0.8rem;">
+                        <span style="color: var(--accent);">AUTO_CYCLE: ACTIVE</span>
+                        <span id="slide-counter">01 / 03</span>
+                    </div>
+                </div>
+                <div class="progress-line" id="auto-progress"></div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 40px;">
+            <div class="console-box" id="term-out"></div>
+            
+            <div class="glass-card" style="background: var(--panel-bg); padding: 30px;">
+                <h4 style="margin-bottom: 20px; font-size: 0.9rem;">ТЕХНІЧНИЙ МОНІТОРИНГ</h4>
+                <div style="margin-bottom: 15px;">
+                    <div style="display:flex; justify-content:space-between; font-size:12px;"><span>CANVAS ENGINE</span><span>100%</span></div>
+                    <div class="bar-outer"><div class="bar-inner" data-width="100%"></div></div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <div style="display:flex; justify-content:space-between; font-size:12px;"><span>JS LOGIC</span><span>95%</span></div>
+                    <div class="bar-outer"><div class="bar-inner" data-width="95%"></div></div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <div style="display:flex; justify-content:space-between; font-size:12px;"><span>MOBILE ADAPTIVE</span><span>92%</span></div>
+                    <div class="bar-outer"><div class="bar-inner" data-width="92%"></div></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="neurons.js"></script>
+
+    <script>
+        // --- 1. ТЕКСТОВІ ДАНІ ---
+        const slides = [
+            {
+                title: "ФІЛОСОФІЯ",
+                text: "Цифрова еволюція стилю.",
+                desc: "Synapse поєднує біологічні принципи нейронних мереж з архітектурою сучасного вебу. Наша мета — створити інтерфейс, який відчувається живим і реагує на кожен рух користувача.",
+                count: "01 / 03"
+            },
+            {
+                title: "ТЕХНОЛОГІЇ",
+                text: "Продуктивність понад усе.",
+                desc: "Сайт побудований на чистому JavaScript (ES6+), що забезпечує миттєве завантаження. Використання Canvas API дозволяє малювати тисячі часток без втрати FPS на мобільних пристроях.",
+                count: "02 / 03"
+            },
+            {
+                title: "МАРКЕТИНГ",
+                text: "Ексклюзивний Digital досвід.",
+                desc: "Ми орієнтуємося на спеціалістів креативних індустрій. Кожен товар у магазині та кожна послуга з VFX обробки спрямовані на створення унікального візуального коду бренду.",
+                count: "03 / 03"
+            }
+        ];
+
+        // --- 2. ЛОГІКА СЛАЙДЕРА ---
+        let currentIdx = 0;
+        let slideInterval;
+        const duration = 6000; // 6 секунд
+
+        function updateSlider() {
+            const imgElements = document.querySelectorAll('.slide-img');
+            imgElements.forEach((img, i) => img.classList.toggle('active', i === currentIdx));
+
+            document.getElementById('slide-title').innerText = slides[currentIdx].title;
+            document.getElementById('slide-text').innerText = slides[currentIdx].text;
+            document.getElementById('slide-full-desc').innerText = slides[currentIdx].desc;
+            document.getElementById('slide-counter').innerText = slides[currentIdx].count;
+
+            // Скидання та запуск лінії прогресу
+            const bar = document.getElementById('auto-progress');
+            bar.style.transition = 'none';
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.transition = `width ${duration}ms linear`;
+                bar.style.width = '100%';
+            }, 50);
+        }
+
+        function nextSlide() {
+            currentIdx = (currentIdx + 1) % slides.length;
+            updateSlider();
+        }
+
+        function manualChange(dir) {
+            clearInterval(slideInterval);
+            currentIdx = (currentIdx + dir + slides.length) % slides.length;
+            updateSlider();
+            startAutoCycle();
+        }
+
+        function startAutoCycle() {
+            slideInterval = setInterval(nextSlide, duration);
+        }
+
+        // --- 3. СИСТЕМНИЙ ТЕРМІНАЛ ---
+        const logLines = [
+            "> Initializing neural_core.sys", "> Loading assets: 100%", 
+            "> Running UX_Audit...", "> Animation_Frame: 60fps",
+            "> Memory_Usage: 24MB", "> Client_Connection: SECURE",
+            "> Ready for presentation."
+        ];
+        let logStep = 0;
+
+        function runTerminal() {
+            const out = document.getElementById('term-out');
+            const line = document.createElement('div');
+            line.innerHTML = `<span style="color:white;">[SYSTEM]</span> ${logLines[logStep % logLines.length]}`;
+            out.appendChild(line);
+            if (out.childNodes.length > 10) out.removeChild(out.firstChild);
+            logStep++;
+            setTimeout(runTerminal, Math.random() * 2000 + 1000);
+        }
+
+        // --- 4. ІНІЦІАЛІЗАЦІЯ ---
+        window.addEventListener('DOMContentLoaded', () => {
+            updateSlider();
+            startAutoCycle();
+            runTerminal();
+            
+            // Годинник
+            setInterval(() => {
+                document.getElementById('clock').innerText = new Date().toLocaleTimeString() + " // STANDBY";
+            }, 1000);
+
+            // Анімація барів
+            setTimeout(() => {
+                document.querySelectorAll('.bar-inner').forEach(b => b.style.width = b.dataset.width);
+            }, 800);
+        });
+    </script>
+</body>
+</html>
